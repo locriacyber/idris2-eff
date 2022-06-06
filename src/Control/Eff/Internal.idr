@@ -73,10 +73,10 @@ handleRelayS vs fval fcont fr = case toView fr of
 
 ||| Lift effect monad into a more relaxed one. Can be used to reorder effects as well. See src/Test/Ordering.idr for usage.
 export
-lift : Subset fs fs' => Eff fs a -> Eff fs' a
-lift @{s} fr = case toView fr of
+relax : Subset fs fs' => Eff fs a -> Eff fs' a
+relax @{s} fr = case toView fr of
   Pure val => pure val
   Bind x g => do
     let mx = weaken @{s} x
     freex <- lift mx
-    lift (assert_smaller fr (g freex))
+    relax (assert_smaller fr (g freex))
