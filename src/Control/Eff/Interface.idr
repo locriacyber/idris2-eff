@@ -11,20 +11,17 @@ Has IO fs => HasIO (Free (Union fs)) where
    liftIO = send
 
 
--- `Applicative` is not yet dependent
--- Please use `lift` manually
+export
+(>>=) : Subset fs0 fs2 => Subset fs1 fs2 => Eff fs0 a -> (a -> Eff fs1 b) -> Eff fs2 b
+(>>=) val cont = Prelude.do
+   a <- relax val
+   relax (cont a)
 
--- bindr : Subset fs0 fs2 => Subset fs1 fs2 => Eff fs0 a -> (a -> Eff fs1 b) -> Eff fs2 b
--- bindr fr fval = do
---    a <- lift fr
---    lift (fval a)
+export
+(>>) :  Subset fs0 fs2 => Subset fs1 fs2 => Eff fs0 () -> Eff fs1 a -> Eff fs2 a
+(>>) @{s0} @{s1} v0 v1 = Prelude.(>>) (relax @{s0} v0) (relax @{s1} v1)
 
--- export
--- join : Subset fs0 fs2 => Subset fs1 fs2 => Eff fs0 (Eff fs1 a) -> Eff fs2 a
--- join @{s0} @{s1} fr = do
---    a <- lift @{s0} fr
---    lift @{s1} a
-
--- export
--- (>>=) : Subset fs0 fs2 => Subset fs1 fs2 => Eff fs0 a -> (a -> Eff fs1 b) -> Eff fs2 b
--- (>>=) = bindr
+||| Inject value with null effect
+export
+pure : a -> Eff [] a
+pure x = fromView (Pure x)
