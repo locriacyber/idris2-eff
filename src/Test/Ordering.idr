@@ -18,3 +18,8 @@ f1 = do
 
 f2 : Eff [Alice, Bob, Charles] ()
 f2 = cast f1
+
+fio : Eff [IO] ()
+fio = do
+   line <- getLine
+   putStrLn line
