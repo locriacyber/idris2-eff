@@ -1,6 +1,7 @@
 module Control.Eff.Legacy.Writer
 
 import Control.Eff.Internal
+import Control.Eff.Legacy
 
 %default total
 

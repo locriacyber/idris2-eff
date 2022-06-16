@@ -39,37 +39,39 @@ extract fr = case toView fr of
   Pure val => val
   Bind u _ => absurd u
 
+
+||| Handle effect and transform result into another type
+||| @f effect to be handled
 export
-handleRelay :  (prf : Has f fs)
-            => (a -> Eff (fs - f) b)
-            -> (forall v . f v -> (v -> Eff (fs - f) b) -> Eff (fs - f) b)
-            -> Eff fs a
-            -> Eff (fs - f) b
+handleRelay : (prf : Has f fs)
+  => (a -> Eff (fs - f) b)
+  -> (forall v . f v -> (v -> Eff (fs - f) b) -> Eff (fs - f) b)
+  -> Eff fs a
+  -> Eff (fs - f) b
 handleRelay fval fcont fr = case toView fr of
   Pure val => fval val
   Bind x g => case decomp {prf} x of
     Left y  => assert_total $ lift y >>= handleRelay fval fcont . g
     Right y => assert_total $ fcont y (handleRelay fval fcont . g)
 
-export handle :  (prf : Has f fs)
-              => (forall v . f v -> (resume: v -> Eff (fs - f) b) -> Eff (fs - f) b)
-              -> Eff fs b
-              -> Eff (fs - f) b
+export
+handle : (prf : Has f fs)
+      => (forall v . f v -> (resume: v -> Eff (fs - f) b) -> Eff (fs - f) b)
+      -> Eff fs b
+      -> Eff (fs - f) b
 handle fcont fr = handleRelay pure fcont fr
 
-export
-handleRelayS :  (prf : Has f fs)
-             => s
-             -> (s -> a -> Eff (fs - f) b)
-             -> (forall v . s -> f v -> (s -> v -> Eff (fs - f) b) -> Eff (fs - f) b)
-             -> Eff fs a
-             -> Eff (fs - f) b
-handleRelayS vs fval fcont fr = case toView fr of
-  Pure val => fval vs val
-  Bind x g => case decomp {prf} x of
-    Left y  => assert_total $ lift y >>= handleRelayS vs fval fcont . g
-    Right y => assert_total $ fcont vs y (\vs2 => handleRelayS vs2 fval fcont . g)
+fcont_linear : Has f fs => (f v -> Eff (fs - f) v) -> f v -> (resume: v -> Eff (fs - f) b) -> Eff (fs - f) b
+fcont_linear f val resume = do
+  val' <- f val
+  resume val' 
 
+export
+handleLinear : (prf : Has f fs)
+      => (forall v . f v -> Eff (fs - f) v)
+      -> Eff fs b
+      -> Eff (fs - f) b
+handleLinear f fr = handle (fcont_linear f) fr
 
 ||| Turn effect monad into a more relaxed one. Can be used to reorder effects as well. See src/Test/Ordering.idr for usage.
 export
@@ -80,4 +82,3 @@ lift @{s} fr = case toView fr of
     let mx = weaken @{s} x
     freex <- lift mx
     lift (assert_smaller fr (g freex))
-

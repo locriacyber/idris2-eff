@@ -1,6 +1,7 @@
 module Control.Eff.Legacy.State
 
 import Control.Eff.Internal
+import Control.Eff.Legacy
 
 %default total
 

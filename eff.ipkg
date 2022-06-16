@@ -13,13 +13,15 @@ depends    = prelude >= 0.4.0
            , freer   >= 0.1.0
 
 modules = Control.Eff
-        , Control.Eff.Choose
-        , Control.Eff.Except
         , Control.Eff.Internal
-        , Control.Eff.Reader
-        , Control.Eff.State
-        , Control.Eff.Writer
         , Control.Eff.Interface
+
+        , Control.Eff.Legacy
+        , Control.Eff.Legacy.Choose
+        , Control.Eff.Legacy.Except
+        , Control.Eff.Legacy.Reader
+        , Control.Eff.Legacy.State
+        , Control.Eff.Legacy.Writer
 
         , Data.Union
         , Data.Subset
