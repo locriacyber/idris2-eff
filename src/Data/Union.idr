@@ -7,9 +7,9 @@ import Data.Subset
 ||| A list of effect handlers handling effects of types `fs`
 ||| wrapping results in type `m`.
 public export
-data Handler : (fs : List (Type -> Type)) -> (m : Type -> Type) -> Type where
-  Nil : Handler [] m
-  (::) : (h : forall x . f x -> m x) -> Handler fs m -> Handler (f :: fs) m
+data Handler : (m : Type -> Type) -> (fs : List (Type -> Type)) -> Type where
+  Nil : Handler m []
+  (::) : (h : forall x . f x -> m x) -> Handler m fs -> Handler m (f :: fs)
 
 ||| Sum type holding a value of type `t` wrapped in one of the
 ||| effect types listed in `fs`.
@@ -42,7 +42,7 @@ prj1 (U (S x) val) impossible
 ||| Handles all remaining effects via the given
 ||| (heterogeneous) list of event handlers.
 public export
-handleAll : Handler fs m -> Union fs t -> m t
+handleAll : Handler m fs -> Union fs t -> m t
 handleAll []       y              = absurd y
 handleAll (h :: t) (U Z val)     = h val
 handleAll (h :: t) (U (S y) val) = handleAll t (U y val)

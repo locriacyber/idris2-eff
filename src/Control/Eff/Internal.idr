@@ -22,14 +22,14 @@ send = lift . inj
 ||| Handle all effectful computations in `m`,
 ||| returning the underlying free monad.
 export
-toFree : Eff fs t -> Handler fs m -> Free m t
-toFree eff h = mapK (handleAll h) eff
+toFree : Handler m fs -> Eff fs t -> Free m t
+toFree h eff = mapK (handleAll h) eff
 
 ||| Run an effectful computation without overflowing
 ||| the stack by handling all computations in monad `m`.
 export
-runEff : MonadRec m => Eff fs t -> Handler fs m -> m t
-runEff eff h = foldMap (handleAll h) eff
+runEff : MonadRec m => Handler m fs -> Eff fs t -> m t
+runEff h eff = foldMap (handleAll h) eff
 
 ||| Extract the (pure) result of an effectful computation
 ||| where all effects have been handled.

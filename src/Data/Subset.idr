@@ -36,16 +36,19 @@ public export
 (-) xs _ {prf} = drop xs prf
 
 
+public export
+data Every : (a -> Type) -> List a -> Type where
+  Nil : Every f []
+  (::) : {x: a} -> f x -> Every f xs -> Every f (x::xs)
+
 ||| Proof that one set is subset of another set.
 ||| Sets are represented by `List`. There is no gaurantee for no duplicate in list though.
 public export
-data Subset : {0 a: Type} -> (xs, ys : List a) -> Type where
-  Nil : Subset [] ys
-  (::) : {0 x: a} -> (e : Has x ys) -> Subset xs ys -> Subset (x::xs) ys
-
+Subset : {0 a: Type} -> (xs, ys : List a) -> Type
+Subset xs ys = Every (\x => Has x ys) xs
 
 public export
 lemma_subset : Subset fs fs' -> Has f fs -> Has f fs'
 lemma_subset Nil has0 impossible
-lemma_subset (e :: _     ) Z = e
+lemma_subset (e :: _) Z = e
 lemma_subset (_ :: subset) (S has) = lemma_subset subset has
