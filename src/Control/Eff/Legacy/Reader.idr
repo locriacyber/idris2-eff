@@ -1,4 +1,4 @@
-module Control.Eff.Reader
+module Control.Eff.Legacy.Reader
 
 import Control.Eff.Internal
 

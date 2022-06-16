@@ -1,4 +1,4 @@
-module Control.Eff.State
+module Control.Eff.Legacy.State
 
 import Control.Eff.Internal
 

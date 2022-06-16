@@ -1,4 +1,4 @@
-module Control.Eff.Writer
+module Control.Eff.Legacy.Writer
 
 import Control.Eff.Internal
 

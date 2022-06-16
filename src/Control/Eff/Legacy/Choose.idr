@@ -1,4 +1,4 @@
-module Control.Eff.Choose
+module Control.Eff.Legacy.Choose
 
 import Control.Eff.Internal
 

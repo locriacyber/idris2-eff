@@ -1,4 +1,4 @@
-module Control.Eff.Except
+module Control.Eff.Legacy.Except
 
 import Control.Eff.Internal
 
