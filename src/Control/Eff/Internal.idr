@@ -73,6 +73,17 @@ handleLinear : (prf : Has f fs)
       -> Eff (fs - f) b
 handleLinear f fr = handle (fcont_linear f) fr
 
+||| Add one effect into effect union.
+export
+lift1 : Eff fs a -> Eff (f :: fs) a
+lift1 fr = case toView fr of
+  Pure val => pure val
+  Bind x g => do
+    let mx = weaken1 x
+    freex <- lift mx
+    lift1 (assert_smaller fr (g freex))
+
+
 ||| Turn effect monad into a more relaxed one. Can be used to reorder effects as well. See src/Test/Ordering.idr for usage.
 export
 lift : Subset fs fs' => Eff fs a -> Eff fs' a
